@@ -15,20 +15,10 @@
 %     with this program; if not, write to the Free Software Foundation, Inc.,
 %     51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
-% 28.06.2016 Steffen Urban
 % 18.08.2023 Shi Shenglei
 
-function [err,J] = residualsAndJacobian(R, t, points3D, r, s)
-    nrPts = size(points3D,2);
-    err = zeros(2*nrPts,1);
-    J = zeros(2*nrPts,6);
-
-    res1 = R*points3D+repmat(t,1,nrPts);
-    for i=1:nrPts
-        err(2*i-1,1) = r(:,i)'*res1(:,i);
-        err(2*i,1) = s(:,i)'*res1(:,i);
-
-        J(2*i-1,:) = [-r(:,i)'*skew(res1(:,i)) r(:,i)'];
-        J(2*i,:) = [-s(:,i)'*skew(res1(:,i)) s(:,i)'];
-    end
+function [wv] = skew(v)
+    wv = [  0   -v(3)  v(2);
+           v(3)   0   -v(1);
+          -v(2)  v(1)   0   ];
 end

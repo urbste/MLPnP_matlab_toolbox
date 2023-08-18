@@ -16,36 +16,31 @@
 %     51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
 % 28.06.2016 Steffen Urban
+% 18.08.2023 Shi Shenglei
 
 function R2 = Rodrigues2(R1)
 
-[r,c] = size(R1);
+    [r,c] = size(R1);
 
-%% Rodrigues Rotation Vector to Rotation Matrix
-if ((r == 3) && (c == 1)) || ((r == 1) && (c == 3))
-    wx = [  0   -R1(3)  R1(2);
-           R1(3)   0   -R1(1);
-          -R1(2)  R1(1)   0   ];
-      
-    omega_norm = sqrt(R1(1)^2 + R1(2)^2 + R1(3)^2);
-    
-    if (omega_norm < eps)
-        R2 = eye(3);
-    else
-        R2 = eye(3) + ...
-             sin(omega_norm)/omega_norm*wx + ...
-             (1-cos(omega_norm))/omega_norm^2*wx^2;
-    end
-
-%% Rotation Matrix to Rodrigues Rotation Vector
-elseif (r == 3) && (c == 3)
-    w_norm = acos((trace(R1)-1)/2);
-    if (w_norm < eps)
-        R2 = [0 0 0]';
-    else
-        R2 = 1/(2*sin(w_norm)) * ...
-            [R1(3,2)-R1(2,3);R1(1,3)-R1(3,1);R1(2,1)-R1(1,2)]*w_norm;
+    %% Rodrigues Rotation Vector to Rotation Matrix
+    if ((r == 3) && (c == 1)) || ((r == 1) && (c == 3))
+        omega_norm = norm(R1);
+        if (omega_norm < eps)
+            R2 = eye(3);
+        else
+            wx = skew(R1);
+            R2 = eye(3) + ...
+                 sin(omega_norm)/omega_norm*wx + ...
+                 (1-cos(omega_norm))/omega_norm^2*wx^2;
+        end
+    %% Rotation Matrix to Rodrigues Rotation Vector
+    elseif (r == 3) && (c == 3)
+        w_norm = acos((trace(R1)-1)/2);
+        if (w_norm < eps)
+            R2 = [0 0 0]';
+        else
+            R2 = 1/(2*sin(w_norm)) * ...
+                [R1(3,2)-R1(2,3);R1(1,3)-R1(3,1);R1(2,1)-R1(1,2)]*w_norm;
+        end
     end
 end
-
-

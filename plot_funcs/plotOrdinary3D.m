@@ -1,6 +1,6 @@
 addpath plot_funcs;
 
-load ordinary3Dresults
+%load ordinary3Dresults
 
 close all;
 yrange= [0 2];
