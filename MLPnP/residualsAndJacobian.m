@@ -16,24 +16,18 @@
 %     51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
 % 28.06.2016 Steffen Urban
-function [err,J] = residualsAndJacobian(x, r, s, points3D)
+% 18.08.2023 Shi Shenglei
+function [err,J] = residualsAndJacobian(R, t, r, s, points3D)
+    nrPts = size(points3D,2);
+    err = zeros(2*nrPts,1);
+    J = zeros(2*nrPts,6);
 
-nrPts = size(points3D,2);
+    res1 = R*points3D+repmat(t,1,nrPts);
+    for i=1:nrPts
+        err(2*i-1,1) = r(:,i)'*res1(:,i);
+        err(2*i,1) = s(:,i)'*res1(:,i);
 
-err = zeros(2*nrPts,1);
-J = zeros(2*nrPts,6);
-R = Rodrigues2(x(1:3));
-t = x(4:6);
-
-res1 = R*points3D+repmat(t,1,nrPts);
-normres = normc(res1(1:3,:));
-
-for i=1:size(r,2)
-    err(2*i-1,1) = r(:,i)'*normres(:,i);
-    err(2*i,1) = s(:,i)'*normres(:,i);
-    J(2*i-1:2*i,1:6) = jacobians_Rodrigues(points3D(1,i),points3D(2,i),points3D(3,i),...
-        r(1,i),r(2,i),r(3,i),s(1,i),s(2,i),s(3,i),x(4),x(5),x(6),x(1),x(2),x(3));
+        J(2*i-1,:) = [-r(:,i)'*skew(res1(:,i)) r(:,i)'];
+        J(2*i,:) = [-s(:,i)'*skew(res1(:,i)) s(:,i)'];
+    end
 end
-
-end
-

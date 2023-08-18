@@ -1,6 +1,6 @@
 addpath plot_funcs;
 
-load planar3Dresults
+%load planar3Dresults
 
 close all;
 yrange= [0 2];
