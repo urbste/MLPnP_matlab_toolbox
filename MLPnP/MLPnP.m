@@ -38,9 +38,10 @@
 %                      here K\ and /K' are the Jacobians of the image to
 %                      bearing vector transformation (inverse calibration
 %                      matrix K. Details in the paper.
-% output: 1. T          - 4x4 transformation matrix [R T;0 0 0 1]
+% output: 1. R       - rotation matrix
+%         2. t       - translation vector 
 
-function [T] = MLPnP(points3D, v, cov)
+function [Rout, tout] = MLPnP(points3D, v, cov)
     use_cov = 1;
     % if cov is not given don't use it
     if nargin < 3
@@ -51,7 +52,9 @@ function [T] = MLPnP(points3D, v, cov)
     % matrix of null space vectors r and s
     r = zeros(3,nrPts);
     s = zeros(3,nrPts);
-    cov_reduced = zeros(2,2,nrPts);
+    if use_cov
+        cov_reduced = zeros(2,2,nrPts);
+    end
 
     % compute null spaces of bearing vector v: null(v')
     for i=1:nrPts
@@ -73,12 +76,11 @@ function [T] = MLPnP(points3D, v, cov)
     A = zeros(nrPts,12);
     if (rank(S) == 2)
         planar = 1;
-        points3D1 = eigRot'*(points3D);
-        points3Dn = [points3D1;ones(1,nrPts)];
+        points3Dn = eigRot'*(points3D);
         % create reduced design matrix
         A = zeros(nrPts,9);
     else
-        points3Dn = [points3D;ones(1,nrPts)];
+        points3Dn = points3D;
     end
 
     % stochastic model
@@ -175,7 +177,7 @@ function [T] = MLPnP(points3D, v, cov)
         P(:,1) = cross(P(:,2),P(:,3));
 
         %SVD to find the best rotation matrix in the Frobenius sense
-        [U2,~,V2] = svd(P(1:3,1:3));
+        [U2,~,V2] = svd(P);
         R = U2*V2'; 
         if det(R) < 0
             R = -1*R;
@@ -210,7 +212,7 @@ function [T] = MLPnP(points3D, v, cov)
         P = reshape(v1(1:9,end),3,3)';
         scalefact = (abs(norm(P(:,1))*norm(P(:,2))*norm(P(:,3))))^(1/3);
         %SVD to find the best rotation matrix in the Frobenius sense
-        [U2,~,V2] = svd(P(1:3,1:3)); 
+        [U2,~,V2] = svd(P); 
         R = U2*V2'; %cw
         if det(R) < 0
             R = -1*R;
@@ -243,6 +245,4 @@ function [T] = MLPnP(points3D, v, cov)
     optimFlags.maxit = 5;
     optimFlags.tau   = 1e-4;
     [Rout, tout] = optim_MLPnP_GN(T(1:3,1:3), T(1:3,4), points3D, r, s, Kll, optimFlags);
-
-    T = [Rout tout];
 end

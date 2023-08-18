@@ -15,7 +15,7 @@
 %     with this program; if not, write to the Free Software Foundation, Inc.,
 %     51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
-% 28.06.2016 Steffen Urban
+% 18.08.2023 Shi Shenglei
 
 function [wv] = skew(v)
     wv = [  0   -v(3)  v(2);

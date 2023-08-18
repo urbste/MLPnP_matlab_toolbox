@@ -16,6 +16,7 @@
 %     51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
 % 28.06.2016 Steffen Urban
+% 18.08.2023 Shi Shenglei
 
 function R2 = Rodrigues2(R1)
 

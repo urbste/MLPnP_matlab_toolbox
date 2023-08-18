@@ -17,7 +17,8 @@
 
 % 28.06.2016 Steffen Urban
 % 18.08.2023 Shi Shenglei
-function [err,J] = residualsAndJacobian(R, t, r, s, points3D)
+
+function [err,J] = residualsAndJacobian(R, t, points3D, r, s)
     nrPts = size(points3D,2);
     err = zeros(2*nrPts,1);
     J = zeros(2*nrPts,6);

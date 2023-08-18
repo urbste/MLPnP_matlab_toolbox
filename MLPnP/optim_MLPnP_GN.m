@@ -18,19 +18,15 @@
 % 28.06.2016 Steffen Urban
 % 18.08.2023 Shi Shenglei
 
-function [Rout, tout] = optim_MLPnP_GN(R, t, points3D, rnull, snull, P, optimFlags)
-    nrPts = size(points3D,2);
-
+function [Rout, tout] = optim_MLPnP_GN(R, t, points3D, rnull, snull, invKll, optimFlags)
     % optim params
     epsParam    = optimFlags.epsP;
     epsFunc     = optimFlags.epsF;
 
     % iteration params
     cnt = 0;
-    stop = false;
-    invKll = P;
-    while cnt < optimFlags.maxit && stop == 0
-        [r, J] = residualsAndJacobian(R, t, rnull, snull, points3D);
+    while cnt < optimFlags.maxit
+        [r, J] = residualsAndJacobian(R, t, points3D, rnull, snull);
         % design matrix
         N = J.'*invKll*J;
         % System matrix
